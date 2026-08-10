@@ -749,18 +749,22 @@ if (closeCartButton) {
   closeCartButton.addEventListener("click", closeCart);
 }
 
-document.querySelector("#wishlistButton").addEventListener("click", () => {
-  if (!state.wishlist.length) {
-    showToast("المفضلة فارغة");
-    return;
-  }
+const wishlistButton = document.querySelector("#wishlistButton");
 
-  state.wishlistOnly = !state.wishlistOnly;
-  state.activeCategory = "الكل";
-  renderDepartments();
-  renderProducts();
-  showToast(state.wishlistOnly ? "عرض المفضلة فقط" : "عرض كل المنتجات");
-});
+if (wishlistButton) {
+  wishlistButton.addEventListener("click", () => {
+    if (!state.wishlist.length) {
+      showToast("المفضلة فارغة");
+      return;
+    }
+
+    state.wishlistOnly = !state.wishlistOnly;
+    state.activeCategory = "الكل";
+    renderDepartments();
+    renderProducts();
+    showToast(state.wishlistOnly ? "عرض المفضلة فقط" : "عرض كل المنتجات");
+  });
+}
 
 elements.overlay.addEventListener("click", () => {
   closeCart();
