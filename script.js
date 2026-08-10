@@ -807,7 +807,7 @@ async function testSupabase() {
   console.log("Supabase client:", supabaseClient);
 
   const { data, error, status } = await supabaseClient
-    .from("products")
+    .from("Products")
     .select("*");
 
   console.log("Status:", status);
