@@ -543,7 +543,6 @@ function renderCart() {
   const delivery = subtotal > 0 && subtotal < 2500 ? 75 : 0;
   const total = subtotal + delivery;
 
-  elements.cartCount.textContent = quantity;
   elements.cartTitle.textContent = `${quantity} ${quantity === 1 ? "منتج" : "منتجات"}`;
   elements.wishCount.textContent = state.wishlist.length;
   elements.subtotal.textContent = money(subtotal);
@@ -794,10 +793,15 @@ document.querySelector("#checkoutForm").addEventListener("submit", (event) => {
   showToast("تم إرسال الطلب بنجاح");
 });
 
-document.querySelector("#adminToggle").addEventListener("click", () => {
-  const isOpen = elements.adminPanel.classList.toggle("open");
-  elements.overlay.hidden = !isOpen && !elements.cartDrawer.classList.contains("open");
-});
+const adminToggle = document.querySelector("#adminToggle");
+
+if (adminToggle) {
+  adminToggle.addEventListener("click", () => {
+    const isOpen = elements.adminPanel.classList.toggle("open");
+    elements.overlay.hidden =
+      !isOpen && !elements.cartDrawer.classList.contains("open");
+  });
+}
 
 document.querySelector("#closeAdmin").addEventListener("click", () => {
   elements.adminPanel.classList.remove("open");
