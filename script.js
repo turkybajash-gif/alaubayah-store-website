@@ -804,10 +804,13 @@ renderProducts();
 renderCart();
 
 async function testSupabase() {
-  const { data, error } = await supabaseClient
+  console.log("Supabase client:", supabaseClient);
+
+  const { data, error, status } = await supabaseClient
     .from("products")
     .select("*");
 
+  console.log("Status:", status);
   console.log("Products:", data);
   console.log("Error:", error);
 }
