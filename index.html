@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>مؤسسة علي حسين مسفر آل عبية</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <header class="topbar">
+        <a class="brand" href="#" aria-label="الصفحة الرئيسية">
+            <span class="brand-mark">ع</span>
+            <span>
+                <strong>مؤسسة علي حسين</strong>
+                <small>للأثاث وأعمال الخشب</small>
+            </span>
+        </a>
+
+        <form class="search" id="searchForm">
+            <span aria-hidden="true">&#8981;</span>
+            <input id="searchInput" type="search" placeholder="ابحث عن غرف نوم، أبواب، دواليب، رفوف..." />
+        </form>
+
+    </header>
+
+    <main class="app-shell">
+        <aside class="sidebar" aria-label="الأقسام">
+            <section class="profile-card">
+                <span class="avatar">ع</span>
+                <div>
+                    <small>أهلا وسهلا</small>
+                    <strong>اختر التصميم المناسب وننفذه لك بالمقاس</strong>
+                </div>
+            </section>
+
+            <section class="side-panel">
+
+                <h2>الأقسام</h2>
+                <div class="department-list" id="departmentList"></div>
+                <button>غرف النوم</button>
+                <button>الديكورات</button>
+                <button>شاشات الخشب</button>
+                <button>دواليب الخشب</button>
+                <button>ابواب الخشب</button>
+            </section>
+
+            <section class="side-panel flash-panel">
+                <small>خدمة خاصة</small>
+                <strong>تفصيل حسب الطلب</strong>
+                <p>أرسل المقاس والصورة المرجعية، ونجهز لك عرضا واضحا للتنفيذ والتشطيب.</p>
+            </section>
+        </aside>
+
+        <section class="market">
+            <section class="hero" aria-label="كتالوج المؤسسة">
+                <div class="hero-copy">
+                    <span class="kicker">كتالوج رقمي</span>
+                    <h1>أثاث خشبي بتفاصيل مرتبة وتشطيب يليق ببيتك.</h1>
+                    <p>
+                        غرف نوم، أبواب خشب، دواليب، وحدات شاشات، رفوف وديكورات بتصاميم جاهزة أو تنفيذ خاص حسب المقاس.
+                    </p>
+                    <div class="hero-actions">
+                        <button class="primary-button" id="shopNow" type="button">شاهد غرف النوم</button>
+                        <button class="ghost-button light" id="clearFilters" type="button">إعادة ضبط الفلاتر</button>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1100&q=80"
+                        alt="أثاث خشبي في صالة منزلية" />
+                    <div class="ticket">
+                        <small>اليوم</small>
+                        <strong>تنفيذ وتفصيل</strong>
+                    </div>
+                </div>
+            </section>
+
+            <section class="stats" aria-label="مميزات الخدمة">
+                <article>
+                    <span aria-hidden="true">&#10003;</span>
+                    <div>
+                        <strong>مقاسات مرنة</strong>
+                        <small>نضبط التصميم على مساحة بيتك</small>
+                    </div>
+                </article>
+                <article>
+                    <span aria-hidden="true">&#9733;</span>
+                    <div>
+                        <strong>تشطيب نظيف</strong>
+                        <small>ألوان وخامات مناسبة للاستخدام اليومي</small>
+                    </div>
+                </article>
+                <article>
+                    <span aria-hidden="true">&#128230;</span>
+                    <div>
+                        <strong>طلب مباشر</strong>
+                        <small>أضف المنتجات وأرسل بياناتك بسهولة</small>
+                    </div>
+                </article>
+            </section>
+
+            <section class="toolbar" aria-label="فلاتر المنتجات">
+                <div>
+                    <span class="kicker dark">تصفح المنتجات</span>
+                    <h2 id="resultsTitle">كل المنتجات</h2>
+                </div>
+                <div class="filters">
+                    <label class="price-filter">
+                        <span>أعلى سعر</span>
+                        <input id="priceRange" type="range" min="0" max="1" value="1" />
+                        <b id="priceValue">1 ر.س</b>
+                    </label>
+                    <select id="sortSelect" aria-label="ترتيب المنتجات">
+                        <option value="featured">المميز أولا</option>
+                        <option value="priceLow">السعر: من الأقل إلى الأعلى</option>
+                        <option value="priceHigh">السعر: من الأعلى إلى الأقل</option>
+                        <option value="rating">أفضل تقييم</option>
+                    </select>
+                </div>
+            </section>
+
+            <div class="chips" id="categoryChips" aria-label="فلاتر الأقسام"></div>
+            <div class="product-grid" id="productGrid" aria-live="polite"></div>
+            <div class="empty-state" id="emptyState" hidden>
+                <strong>لا توجد منتجات</strong>
+                <span>جرب بحثا آخر، أو اختر قسما وسعرا مختلفين.</span>
+            </div>
+        </section>
+
+        <aside class="admin-panel" id="adminPanel" aria-label="إضافة منتج">
+            <div class="panel-header">
+                <div>
+                    <small>الإدارة</small>
+                    <strong>إضافة منتج</strong>
+                </div>
+                <button class="icon-button plain" id="closeAdmin" type="button"
+                    aria-label="إغلاق الإدارة">&times;</button>
+            </div>
+
+            <form class="admin-form" id="productForm">
+                <label>
+                    اسم المنتج
+                    <input id="newName" type="text" required placeholder="مثال: باب خشب أبيض" />
+                </label>
+                <label>
+                    القسم
+                    <select id="newCategory" required></select>
+                </label>
+                <label>
+                    السعر
+                    <input id="newPrice" type="number" min="1" step="1" required placeholder="2500" />
+                </label>
+                <label>
+                    رابط الصورة
+                    <input id="newImage" type="url" placeholder="https://..." />
+                </label>
+                <label>
+                    الوصف
+                    <textarea id="newDescription" rows="3"
+                        placeholder="اكتب وصفا مختصرا للمنتج والخامة والتشطيب"></textarea>
+                </label>
+                <button class="primary-button full" type="submit">إضافة المنتج</button>
+            </form>
+        </aside>
+    </main>
+
+    <aside class="cart-drawer" id="cartDrawer" aria-label="سلة الطلبات" aria-hidden="true">
+        <div class="panel-header">
+            <div>
+                <small>السلة</small>
+                <strong id="cartTitle">0 منتجات</strong>
+            </div>
+            <button class="icon-button plain" id="closeCart" type="button" aria-label="إغلاق السلة">&times;</button>
+        </div>
+        <div class="cart-items" id="cartItems"></div>
+        <div class="cart-summary">
+            <div>
+                <span>المجموع الفرعي</span>
+                <strong id="subtotal">0 ر.س</strong>
+            </div>
+            <div>
+                <span>التوصيل</span>
+                <strong id="delivery">0 ر.س</strong>
+            </div>
+            <div class="total-line">
+                <span>الإجمالي</span>
+                <strong id="total">0 ر.س</strong>
+            </div>
+            <button class="primary-button full" id="checkoutButton" type="button">إرسال الطلب</button>
+        </div>
+    </aside>
+
+    <div class="overlay" id="overlay" hidden></div>
+
+    <dialog class="product-modal" id="productModal">
+        <button class="icon-button plain modal-close" id="closeModal" type="button" aria-label="إغلاق التفاصيل">
+            &times;
+        </button>
+        <div id="modalContent"></div>
+    </dialog>
+
+    <dialog class="checkout-modal" id="checkoutModal">
+        <button class="icon-button plain modal-close" id="closeCheckout" type="button" aria-label="إغلاق الطلب">
+            &times;
+        </button>
+        <form class="checkout-form" id="checkoutForm">
+            <span class="kicker dark">إرسال الطلب</span>
+            <h2>أكمل بياناتك</h2>
+            <label>
+                الاسم الكامل
+                <input type="text" required placeholder="اسمك الكامل" />
+            </label>
+            <label>
+                رقم الجوال
+                <input type="tel" required placeholder="05########" />
+            </label>
+            <label>
+                العنوان أو ملاحظات التنفيذ
+                <textarea rows="3" required placeholder="المدينة، الحي، المقاسات أو أي تفاصيل مهمة"></textarea>
+            </label>
+            <button class="primary-button full" type="submit">تأكيد الطلب</button>
+        </form>
+    </dialog>
+
+    <div> <class="toast" id="toast" role="status" aria-live="polite"></div>
+    <section id="contact">
+        <h2>تواصل معنا</h>
+        <p>للاستفسار أو طلب تصميم خاص، تواصل معنا عبر:</p>
+        <ul>
+            <li>رقم الجوال: <a href="tel:+966500000000">0500951536</a></li>
+            <li>البريد الإلكتروني: <a href="mailto:turkybajash@gmail.com">turkybajash@gmail.com</a></li>
+        </ul>
+    </section>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
