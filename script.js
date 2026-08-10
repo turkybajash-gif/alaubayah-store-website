@@ -738,8 +738,16 @@ document.addEventListener("click", (event) => {
   }
 });
 
-document.querySelector("#openCart").addEventListener("click", openCart);
-document.querySelector("#closeCart").addEventListener("click", closeCart);
+const openCartButton = document.querySelector("#openCart");
+const closeCartButton = document.querySelector("#closeCart");
+
+if (openCartButton) {
+  openCartButton.addEventListener("click", openCart);
+}
+
+if (closeCartButton) {
+  closeCartButton.addEventListener("click", closeCart);
+}
 
 document.querySelector("#wishlistButton").addEventListener("click", () => {
   if (!state.wishlist.length) {
