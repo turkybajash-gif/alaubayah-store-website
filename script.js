@@ -1,6 +1,5 @@
  const STORE_KEYS = {
   cart: "ali-wood-cart",
-  wishlist: "ali-wood-wishlist",
   products: "ali-wood-products"
 };
 
@@ -367,9 +366,7 @@ const elements = Object.fromEntries(
 const state = {
   products: loadProducts(),
   cart: readStorage(STORE_KEYS.cart, []),
-  wishlist: readStorage(STORE_KEYS.wishlist, []),
   activeCategory: "الكل",
-  wishlistOnly: false,
   search: "",
   maxPrice: 0,
   sort: "featured"
@@ -396,10 +393,6 @@ function saveProducts() {
 
 function saveCart() {
   localStorage.setItem(STORE_KEYS.cart, JSON.stringify(state.cart));
-}
-
-function saveWishlist() {
-  localStorage.setItem(STORE_KEYS.wishlist, JSON.stringify(state.wishlist));
 }
 
 function money(value) {
@@ -469,8 +462,7 @@ function filteredProducts() {
     const text = `${product.name} ${product.category} ${product.description} ${product.tag ?? ""}`
       .toLocaleLowerCase("ar");
     const matchesCategory = state.activeCategory === "الكل" || product.category === state.activeCategory;
-    const matchesWishlist = !state.wishlistOnly || state.wishlist.includes(product.id);
-    return matchesCategory && matchesWishlist && product.price <= state.maxPrice && text.includes(query);
+    return matchesCategory && product.price <= state.maxPrice && text.includes(query);
   });
 
   return products.sort((a, b) => {
@@ -483,26 +475,18 @@ function filteredProducts() {
 
 function renderProducts() {
   const products = filteredProducts();
-  const title = state.wishlistOnly
-    ? "القائمة المفضلة"
-    : state.activeCategory === "الكل"
-      ? "كل المنتجات"
-      : state.activeCategory;
-
+  const title = state.activeCategory === "الكل"
+  ? "كل المنتجات"
+  : state.activeCategory;  
   elements.resultsTitle.textContent = `${title} (${products.length})`;
   elements.emptyState.hidden = products.length !== 0;
 
   elements.productGrid.innerHTML = products.map((product) => {
-    const saved = state.wishlist.includes(product.id);
     return `
       <article class="product-card">
         <div class="product-media">
           <img src="${clean(product.image)}" alt="${clean(product.name)}" loading="lazy" />
           <span class="badge">${clean(product.tag || "متوفر")}</span>
-          <button class="wish-button ${saved ? "active" : ""}" type="button"
-            data-wish="${product.id}" aria-label="حفظ ${clean(product.name)} في المفضلة">
-            ${saved ? "&#9829;" : "&#9825;"}
-          </button>
         </div>
         <div class="product-info">
           <div class="product-topline">
@@ -516,7 +500,6 @@ function renderProducts() {
             <small>متوفر للتنفيذ</small>
           </div>
           <div class="card-actions">
-            <button class="primary-button" type="button" data-add="${product.id}">أضف للسلة</button>
             <button class="quick-button" type="button" data-view="${product.id}"
               aria-label="عرض تفاصيل ${clean(product.name)}">&#8599;</button>
           </div>
@@ -544,7 +527,6 @@ function renderCart() {
   const total = subtotal + delivery;
 
   elements.cartTitle.textContent = `${quantity} ${quantity === 1 ? "منتج" : "منتجات"}`;
-  elements.wishCount.textContent = state.wishlist.length;
   elements.subtotal.textContent = money(subtotal);
   elements.delivery.textContent = delivery === 0 ? "مجانا" : money(delivery);
   elements.total.textContent = money(total);
@@ -604,22 +586,8 @@ function changeQuantity(id, amount) {
   renderCart();
 }
 
-function toggleWishlist(id) {
-  if (state.wishlist.includes(id)) {
-    state.wishlist = state.wishlist.filter((entry) => entry !== id);
-    showToast("تم الحذف من المفضلة");
-  } else {
-    state.wishlist.push(id);
-    showToast("تم الحفظ في المفضلة");
-  }
-  saveWishlist();
-  renderProducts();
-  renderCart();
-}
-
 function setCategory(category) {
   state.activeCategory = category;
-  state.wishlistOnly = false;
   renderDepartments();
   renderProducts();
 }
@@ -677,7 +645,6 @@ function showToast(message) {
 
 function resetFilters() {
   state.activeCategory = "الكل";
-  state.wishlistOnly = false;
   state.search = "";
   state.maxPrice = maxCatalogPrice();
   state.sort = "featured";
@@ -726,7 +693,6 @@ document.addEventListener("click", (event) => {
     addToCart(Number(modalAddButton.dataset.modalAdd));
     elements.productModal.close();
   }
-  if (wishButton) toggleWishlist(Number(wishButton.dataset.wish));
   if (viewButton) openProductModal(Number(viewButton.dataset.view));
   if (increaseButton) changeQuantity(Number(increaseButton.dataset.increase), 1);
   if (decreaseButton) changeQuantity(Number(decreaseButton.dataset.decrease), -1);
@@ -748,22 +714,6 @@ if (closeCartButton) {
   closeCartButton.addEventListener("click", closeCart);
 }
 
-const wishlistButton = document.querySelector("#wishlistButton");
-
-if (wishlistButton) {
-  wishlistButton.addEventListener("click", () => {
-    if (!state.wishlist.length) {
-      showToast("المفضلة فارغة");
-      return;
-    }
-
-    state.wishlistOnly = !state.wishlistOnly;
-    state.activeCategory = "الكل";
-    renderDepartments();
-    renderProducts();
-    showToast(state.wishlistOnly ? "عرض المفضلة فقط" : "عرض كل المنتجات");
-  });
-}
 
 elements.overlay.addEventListener("click", () => {
   closeCart();
