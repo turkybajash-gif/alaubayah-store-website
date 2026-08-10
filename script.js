@@ -1,3 +1,11 @@
+ const SUPABASE_URL = "https://luyampkgrtjojwtgsoqq.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_0BkAs0yDQP3qBT71yCjeKA_LsHpIw6T";
+
+const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+);
+
  const STORE_KEYS = {
   cart: "ali-wood-cart",
   products: "ali-wood-products"
@@ -794,3 +802,14 @@ syncPriceRange();
 renderDepartments();
 renderProducts();
 renderCart();
+
+async function testSupabase() {
+  const { data, error } = await supabaseClient
+    .from("products")
+    .select("*");
+
+  console.log("Products:", data);
+  console.log("Error:", error);
+}
+
+testSupabase();
