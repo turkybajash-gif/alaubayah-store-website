@@ -1,3 +1,4 @@
+ console.log("SCRIPT STARTED");
  const SUPABASE_URL = "https://luyampkgrtjojwtgsoqq.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_0BkAs0yDQP3qBT71yCjeKA_LsHpIw6T";
 
@@ -334,12 +335,14 @@ const selectors = {
   checkoutModal: "#checkoutModal",
   toast: "#toast",
   adminPanel: "#adminPanel",
+  adminPoducts: "#adminProducts",
   newCategory: "#newCategory"
 };
 
 const elements = Object.fromEntries(
   Object.entries(selectors).map(([key, selector]) => [key, document.querySelector(selector)])
 );
+console.log("adminProducts element:", elements.adminProducts);
 
 const state = {
   products: loadProducts(),
@@ -367,6 +370,38 @@ function loadProducts() {
 function saveProducts() {
   const customProducts = state.products.filter((product) => product.id > 1000);
   localStorage.setItem(STORE_KEYS.products, JSON.stringify(customProducts));
+}
+
+async function saveProductToSupabase(product) {
+  const { data, error } = await supabaseClient
+    .from("Products")
+    .insert([product])
+    .select()
+    .single();
+
+  if (error) {
+    console.error("Supabase insert error:", error);
+    showToast("حدث خطأ أثناء حفظ المنتج");
+    return null;
+  }
+
+  console.log("Product saved to Supabase:", data);
+  return data;
+}
+
+async function deleteProductFromSupabase(productId) {
+  const { error } = await supabaseClient
+    .from("Products")
+    .delete()
+    .eq("id", productId);
+
+  if (error) {
+    console.error("Supabase delete error:", error);
+    return false;
+  }
+
+  console.log("Product deleted from Supabase:", productId);
+  return true;
 }
 
 function saveCart() {
@@ -434,6 +469,7 @@ function renderDepartments() {
     .join("");
 }
 
+
 function filteredProducts() {
   const query = state.search.trim().toLocaleLowerCase("ar");
   const products = state.products.filter((product) => {
@@ -485,6 +521,27 @@ function renderProducts() {
       </article>
     `;
   }).join("");
+}
+
+function renderAdminProducts() {
+  if (!elements.adminProducts) return;
+
+  elements.adminProducts.innerHTML = state.products.map((product) => `
+    <article class="admin-product-item">
+      <div>
+        <strong>${clean(product.name)}</strong>
+        <small>${clean(product.category)} — ${money(product.price)}</small>
+      </div>
+
+      <button
+        type="button"
+        class="remove-button"
+        data-admin-delete="${product.id}"
+      >
+        🗑️
+      </button>
+    </article>
+  `).join("");
 }
 
 function cartQuantity() {
@@ -653,7 +710,7 @@ elements.sortSelect.addEventListener("change", (event) => {
   renderProducts();
 });
 
-document.addEventListener("click", (event) => {
+document.addEventListener("click", async (event) => {
   const categoryButton = event.target.closest("[data-category]");
   const categoryJump = event.target.closest("[data-category-jump]");
   const addButton = event.target.closest("[data-add]");
@@ -663,6 +720,7 @@ document.addEventListener("click", (event) => {
   const increaseButton = event.target.closest("[data-increase]");
   const decreaseButton = event.target.closest("[data-decrease]");
   const removeButton = event.target.closest("[data-remove]");
+  const adminDeleteButton=event.target.closest("[data-admin-delete]");
 
   if (categoryButton) setCategory(categoryButton.dataset.category);
   if (categoryJump) setCategory(categoryJump.dataset.categoryJump);
@@ -679,6 +737,27 @@ document.addEventListener("click", (event) => {
     saveCart();
     renderCart();
   }
+  if (adminDeleteButton) {
+  const productId = Number(adminDeleteButton.dataset.adminDelete);
+
+  const deleted = await deleteProductFromSupabase(productId);
+
+  if (!deleted) {
+    showToast("تعذر حذف المنتج");
+    return;
+  }
+
+  state.products = state.products.filter((product) => product.id !== productId);
+
+  state.maxPrice = maxCatalogPrice();
+
+  syncPriceRange();
+  renderDepartments();
+  renderProducts();
+  renderAdminProducts();
+
+  showToast("تم حذف المنتج");
+}
 });
 
 const openCartButton = document.querySelector("#openCart");
@@ -736,7 +815,7 @@ document.querySelector("#closeAdmin").addEventListener("click", () => {
   if (!elements.cartDrawer.classList.contains("open")) elements.overlay.hidden = true;
 });
 
-document.querySelector("#productForm").addEventListener("submit", (event) => {
+document.querySelector("#productForm").addEventListener("submit", async (event) => {
   event.preventDefault();
   const form = event.currentTarget;
   const image = document.querySelector("#newImage").value.trim();
@@ -751,14 +830,20 @@ document.querySelector("#productForm").addEventListener("submit", (event) => {
     description: document.querySelector("#newDescription").value.trim() || "منتج جديد يمكن تنفيذه بالمقاس والتشطيب المطلوب."
   };
 
-  state.products.push(product);
-  state.maxPrice = Math.max(state.maxPrice, product.price);
-  saveProducts();
-  syncPriceRange();
-  renderDepartments();
-  renderProducts();
-  form.reset();
-  showToast("تمت إضافة المنتج");
+const savedProduct = await saveProductToSupabase(product);
+
+if (!savedProduct) {
+  return;
+}
+
+state.products.push(savedProduct);
+state.maxPrice = Math.max(state.maxPrice, savedProduct.price);
+syncPriceRange();
+renderDepartments();
+renderProducts();
+renderAdminProducts();
+form.reset();
+showToast("تمت إضافة المنتج");
 });
 
 document.querySelector("#shopNow").addEventListener("click", () => {
@@ -771,4 +856,5 @@ document.querySelector("#clearFilters").addEventListener("click", resetFilters);
 syncPriceRange();
 renderDepartments();
 renderProducts();
+renderAdminProducts();
 renderCart();
