@@ -308,36 +308,6 @@ const starterProducts = [
     image: "https://files.catbox.moe/edasir.jpg",
     description: "ديكور مريح للمنظر بالشيبةرد الاصلي وبعمل متقن سهل التنظيف."
   },
-  {
-    id: 29,
-    name: "دولاب شجرة الكريسماس",
-    category: "دواليب الخشب",
-    price: 1,
-    rating: 4.7,
-    tag: "آمن",
-    image: "",
-    description: "دولاب خشبي ذوديكورشجرة الكريسماس جميل للاطفال وبسعر مناسب."
-  },
-  {
-    id: 30,
-    name: "دولاب شجرة الكريسماس",
-    category: "دواليب الخشب",
-    price: 1,
-    rating: 4.7,
-    tag: "آمن",
-    image: "",
-    description: "دولاب خشبي ذوديكورشجرة الكريسماس جميل للاطفال وبسعر مناسب."
-  },
-  {
-    id: 31,
-    name: "دولاب شجرة الكريسماس",
-    category: "دواليب الخشب",
-    price: 1,
-    rating: 4.7,
-    tag: "آمن",
-    image: "",
-    description: "دولاب خشبي ذوديكورشجرة الكريسماس جميل للاطفال وبسعر مناسب."
-  },
 ];
 
 const selectors = {
@@ -802,17 +772,3 @@ syncPriceRange();
 renderDepartments();
 renderProducts();
 renderCart();
-
-async function testSupabase() {
-  console.log("Supabase client:", supabaseClient);
-
-  const { data, error, status } = await supabaseClient
-    .from("Products")
-    .select("*");
-
-  console.log("Status:", status);
-  console.log("Products:", data);
-  console.log("Error:", error);
-}
-
-testSupabase();
