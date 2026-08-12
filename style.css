@@ -651,7 +651,9 @@ select {
   z-index: 45;
   display: none;
   width: min(380px, calc(100vw - 32px));
+  max-height: calc(100vh-110px);
   padding: 18px;
+  overflow-y: auto;
 }
 
 .admin-panel.open {
