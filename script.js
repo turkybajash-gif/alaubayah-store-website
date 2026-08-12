@@ -335,7 +335,7 @@ const selectors = {
   checkoutModal: "#checkoutModal",
   toast: "#toast",
   adminPanel: "#adminPanel",
-  adminPoducts: "#adminProducts",
+  adminProducts: "#adminProducts",
   newCategory: "#newCategory"
 };
 

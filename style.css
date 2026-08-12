@@ -655,7 +655,10 @@ select {
 }
 
 .admin-panel.open {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh-110px);
+  overflow-y: auto;
 }
 
 .panel-header {
