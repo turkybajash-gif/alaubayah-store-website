@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة الإدارة - مؤسسة علي حسين</title>
+
+    <link rel="stylesheet" href="admin.css">
+</head>
+
+<body>
+
+    <main class="admin-page">
+
+        <header class="admin-header">
+            <div>
+                <small>مؤسسة علي حسين مسفر آل عبية</small>
+                <h1>لوحة الإدارة</h1>
+            </div>
+
+            <a href="index.html">العودة للموقع</a>
+        </header>
+
+        <section class="admin-section">
+
+            <h2>إضافة منتج</h2>
+
+            <form id="productForm">
+
+                <label>
+                    اسم المنتج
+                    <input id="newName" type="text" required>
+                </label>
+
+                <label>
+                    القسم
+                    <select id="newCategory" required></select>
+                </label>
+
+                <label>
+                    السعر
+                    <input id="newPrice" type="number" min="1" required>
+                </label>
+
+                <label>
+                    رابط الصورة
+                    <input id="newImage" type="url">
+                </label>
+
+                <label>
+                    الوصف
+                    <textarea id="newDescription" rows="4"></textarea>
+                </label>
+
+                <button type="submit">
+                    إضافة المنتج
+                </button>
+
+            </form>
+
+        </section>
+
+        <section class="admin-section">
+
+            <h2>المنتجات الحالية</h2>
+
+            <div id="adminProducts"></div>
+
+        </section>
+
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="admin.js"></script>
+
+</body>
+
+</html>

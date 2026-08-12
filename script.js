@@ -404,6 +404,21 @@ async function deleteProductFromSupabase(productId) {
   return true;
 }
 
+async function loadProductsFromSupabase() {
+  const { data, error } = await supabaseClient
+    .from("Products")
+    .select("*")
+    .order("id", { ascending: true });
+
+  if (error) {
+    console.error("Supabase select error:", error);
+    return [];
+  }
+
+  console.log("Products loaded from Supabase:", data);
+  return data || [];
+}
+
 function saveCart() {
   localStorage.setItem(STORE_KEYS.cart, JSON.stringify(state.cart));
 }
@@ -526,7 +541,9 @@ function renderProducts() {
 function renderAdminProducts() {
   if (!elements.adminProducts) return;
 
-  elements.adminProducts.innerHTML = state.products.map((product) => `
+elements.adminProducts.innerHTML = state.products
+  .filter((product) => product.id > 1000)
+  .map((product) => `
     <article class="admin-product-item">
       <div>
         <strong>${clean(product.name)}</strong>
@@ -800,16 +817,6 @@ document.querySelector("#checkoutForm").addEventListener("submit", (event) => {
   showToast("تم إرسال الطلب بنجاح");
 });
 
-const adminToggle = document.querySelector("#adminToggle");
-
-if (adminToggle) {
-  adminToggle.addEventListener("click", () => {
-    const isOpen = elements.adminPanel.classList.toggle("open");
-    elements.overlay.hidden =
-      !isOpen && !elements.cartDrawer.classList.contains("open");
-  });
-}
-
 document.querySelector("#closeAdmin").addEventListener("click", () => {
   elements.adminPanel.classList.remove("open");
   if (!elements.cartDrawer.classList.contains("open")) elements.overlay.hidden = true;
@@ -853,8 +860,19 @@ document.querySelector("#shopNow").addEventListener("click", () => {
 
 document.querySelector("#clearFilters").addEventListener("click", resetFilters);
 
-syncPriceRange();
-renderDepartments();
-renderProducts();
-renderAdminProducts();
-renderCart();
+
+async function initializeStore() {
+  const supabaseProducts = await loadProductsFromSupabase();
+
+  state.products = [...starterProducts, ...supabaseProducts];
+
+  state.maxPrice = maxCatalogPrice();
+
+  syncPriceRange();
+  renderDepartments();
+  renderProducts();
+  renderAdminProducts();
+  renderCart();
+}
+
+initializeStore();
