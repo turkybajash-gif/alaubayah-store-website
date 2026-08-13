@@ -10,6 +10,35 @@ const supabaseClient = window.supabase.createClient(
     SUPABASE_PUBLISHABLE_KEY
 );
 
+async function checkAdminAccess() {
+
+    const { data, error } = await supabaseClient.auth.getUser();
+
+    if (error || !data.user) {
+        window.location.href = "admin-login.html";
+        return false;
+    }
+
+    const userEmail = data.user.email;
+
+    // ضع إيميل حساب المدير هنا
+    const ADMIN_EMAIL = "turkyabd4@icloud.com";
+
+    if (userEmail !== ADMIN_EMAIL) {
+        alert("ليس لديك صلاحية دخول لوحة الإدارة.");
+
+        await supabaseClient.auth.signOut();
+
+        window.location.href = "admin-login.html";
+
+        return false;
+    }
+
+    console.log("ADMIN AUTHENTICATED:", userEmail);
+
+    return true;
+}
+
 
 // الأقسام
 const categories = [
@@ -28,6 +57,20 @@ const categories = [
 const productForm = document.querySelector("#productForm");
 const adminProducts = document.querySelector("#adminProducts");
 const newCategory = document.querySelector("#newCategory");
+
+const logoutButton = document.querySelector("#logoutButton");
+logoutButton.addEventListener("click", async () => {
+
+    const { error } = await supabaseClient.auth.signOut();
+
+    if (error) {
+        console.error("Logout error:", error);
+        alert("تعذر تسجيل الخروج");
+        return;
+    }
+
+    window.location.href = "admin-login.html";
+});
 
 
 // تعبئة الأقسام
@@ -76,79 +119,158 @@ function renderAdminProducts(products) {
                 </small>
             </div>
 
-            <button
-                type="button"
-                class="delete-product"
-                data-id="${product.id}"
-            >
-                🗑️ حذف
-            </button>
+           <div class="admin-product-actions">
+
+    <button
+        type="button"
+        class="edit-product"
+        data-id="${product.id}"
+    >
+        ✏️ تعديل
+    </button>
+
+    <button
+        type="button"
+        class="delete-product"
+        data-id="${product.id}"
+    >
+        🗑️ حذف
+    </button>
+
+</div>
 
         </article>
     `).join("");
 }
 
+let editingProductId = null;
 
 // إضافة منتج
 productForm.addEventListener("submit", async (event) => {
-
     event.preventDefault();
 
+    console.log("FORM SUBMITTED")
+
     const product = {
-
-        id: Date.now(),
-
         name: document.querySelector("#newName").value.trim(),
-
         category: document.querySelector("#newCategory").value,
-
-        price: Number(
-            document.querySelector("#newPrice").value
-        ),
-
-        rating: 4.5,
-
-        tag: "مضاف حديثا",
-
-        image:
-            document.querySelector("#newImage").value.trim() ||
-            "https://images.unsplash.com/photo-1600566752355-35792bedcfea?auto=format&fit=crop&w=900&q=80",
-
-        description:
-            document.querySelector("#newDescription").value.trim() ||
-            "منتج جديد يمكن تنفيذه بالمقاس والتشطيب المطلوب."
-
+        price: Number(document.querySelector("#newPrice").value),
+        image: document.querySelector("#newImage").value.trim(),
+        description: document.querySelector("#newDescription").value.trim()
     };
 
+    // إذا كنا نعدل منتجًا موجودًا
+    if (editingProductId !== null) {
 
-    const { data, error } = await supabaseClient
-        .from("Products")
-        .insert([product])
-        .select()
-        .single();
+        console.log("EDITING PRODUCT:", editingProductId);
+console.log("PRODUCT DATA:", product);
 
+        const { data: updatedProduct, error } = await supabaseClient
+    .from("Products")
+    .update(product)
+    .eq("id", editingProductId)
+    .select();
 
-    if (error) {
+console.log("UPDATED PRODUCT FROM SUPABASE:", updatedProduct);
 
-        console.error("Supabase insert error:", error);
+if (error) {
+    console.error("Supabase update error:", error);
+    alert("تعذر حفظ التعديل");
+    return;
+}
 
-        alert("حدث خطأ أثناء إضافة المنتج");
+if (!updatedProduct || updatedProduct.length === 0) {
+    console.error("UPDATE AFFECTED ZERO ROWS");
+    alert("لم يتم تعديل المنتج. تحقق من صلاحيات UPDATE في Supabase.");
+    return;
+}
+        if (error) {
+            console.error("Supabase update error:", error);
+            alert("تعذر حفظ التعديل");
+            return;
+        }
+
+        console.log("Product updated:", editingProductId);
+
+        editingProductId = null;
+
+        productForm.reset();
+
+        productForm.querySelector("button[type='submit']").textContent =
+            "إضافة المنتج";
+
+        loadProducts();
 
         return;
     }
 
+    // إضافة منتج جديد
+    const newProduct = {
+        id: Date.now(),
+        ...product,
+        rating: 4.5,
+        tag: "مضاف حديثا"
+    };
+
+    const { data, error } = await supabaseClient
+        .from("Products")
+        .insert([newProduct])
+        .select()
+        .single();
+
+    if (error) {
+        console.error("Supabase insert error:", error);
+        alert("حدث خطأ أثناء إضافة المنتج");
+        return;
+    }
 
     console.log("Product added:", data);
 
     productForm.reset();
 
     loadProducts();
-
 });
-
 
 // حذف منتج
 adminProducts.addEventListener("click", async (event) => {
+
+    const editButton =
+    event.target.closest(".edit-product");
+
+if (editButton) {
+
+    const productId = Number(editButton.dataset.id);
+
+    const { data, error } = await supabaseClient
+        .from("Products")
+        .select("*")
+        .eq("id", productId)
+        .single();
+
+    if (error) {
+        console.error("Supabase select error:", error);
+        alert("تعذر تحميل بيانات المنتج");
+        return;
+    }
+
+    editingProductId = productId;
+
+    document.querySelector("#newName").value = data.name;
+    document.querySelector("#newCategory").value = data.category;
+    document.querySelector("#newPrice").value = data.price;
+    document.querySelector("#newImage").value = data.image || "";
+    document.querySelector("#newDescription").value = data.description || "";
+
+    productForm.querySelector("button[type='submit']").textContent =
+        "حفظ التعديل";
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+
+    return;
+}
 
     const deleteButton =
         event.target.closest(".delete-product");
@@ -184,4 +306,15 @@ adminProducts.addEventListener("click", async (event) => {
 
 
 // تشغيل الصفحة
-loadProducts();
+async function initializeAdmin() {
+
+    const isAuthenticated = await checkAdminAccess();
+
+    if (!isAuthenticated) {
+        return;
+    }
+
+    loadProducts();
+}
+
+initializeAdmin();

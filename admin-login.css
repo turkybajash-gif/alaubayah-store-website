@@ -1,0 +1,144 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: Tahoma, Arial, sans-serif;
+    background:
+        radial-gradient(circle at top right, #d9e5df 0, transparent 35%),
+        linear-gradient(135deg, #f5f7f5, #e9eeeb);
+    color: #171717;
+}
+
+.login-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+.login-card {
+    width: min(430px, 100%);
+    padding: 38px;
+    border: 1px solid rgba(31, 122, 104, 0.15);
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.94);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.10);
+}
+
+.login-logo {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.login-logo span {
+    display: block;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+}
+
+.login-logo small {
+    display: block;
+    margin-top: 6px;
+    color: #777;
+    font-size: 14px;
+}
+
+.login-heading {
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+.login-heading h1 {
+    margin: 0;
+    font-size: 28px;
+}
+
+.login-heading p {
+    margin: 8px 0 0;
+    color: #777;
+}
+
+#loginForm {
+    display: grid;
+    gap: 18px;
+}
+
+#loginForm label {
+    display: grid;
+    gap: 8px;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+#loginForm input {
+    width: 100%;
+    padding: 14px 15px;
+    border: 1px solid #d9dfdc;
+    border-radius: 10px;
+    outline: none;
+    background: #fafcfb;
+    font: inherit;
+    transition: 0.2s ease;
+}
+
+#loginForm input:focus {
+    border-color: #1f7a68;
+    box-shadow: 0 0 0 3px rgba(31, 122, 104, 0.10);
+    background: #fff;
+}
+
+#loginForm button {
+    margin-top: 5px;
+    width: 100%;
+    padding: 14px;
+    border: 0;
+    border-radius: 10px;
+    background: #1f7a68;
+    color: white;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+#loginForm button:hover {
+    transform: translateY(-1px);
+    opacity: 0.92;
+}
+
+#loginMessage {
+    margin: 0;
+    min-height: 20px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.back-to-store {
+    display: block;
+    margin-top: 22px;
+    text-align: center;
+    color: #1f7a68;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.back-to-store:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+
+    .login-card {
+        padding: 28px 22px;
+        border-radius: 18px;
+    }
+
+    .login-heading h1 {
+        font-size: 24px;
+    }
+}
